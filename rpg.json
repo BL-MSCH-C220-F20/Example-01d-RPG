@@ -1,0 +1,220 @@
+{
+  "passages": [
+    {
+      "text": "You are in a crowded inn. The bard in the corner is raucously singing the exploits of a brave adventurer.\n\n[[Do you rest for the night?|rest]] \n[[Do you go on an adventure?->adventure]] \n[[Do you go shopping?->shop]]",
+      "links": [
+        {
+          "name": "Do you rest for the night?",
+          "link": "rest",
+          "pid": "2"
+        },
+        {
+          "name": "Do you go on an adventure?",
+          "link": "adventure",
+          "pid": "3"
+        },
+        {
+          "name": "Do you go shopping?",
+          "link": "shop",
+          "pid": "4"
+        }
+      ],
+      "name": "main",
+      "pid": "1",
+      "position": {
+        "x": "412",
+        "y": "189"
+      }
+    },
+    {
+      "text": "You spend the night in the inn. You feel rested and refreshed.\n---\n(set: $days to $days + 1)\n(set: $hp to 10)\n(display: \"main\")",
+      "name": "rest",
+      "pid": "2",
+      "position": {
+        "x": "262",
+        "y": "339"
+      }
+    },
+    {
+      "text": "A monster appears!\n(set: $monster_hp to (random: 1,6))\n\n[[Fight him->fight]]\n[[Flee->main]]",
+      "links": [
+        {
+          "name": "Fight him",
+          "link": "fight",
+          "pid": "9"
+        },
+        {
+          "name": "Flee",
+          "link": "main",
+          "pid": "1"
+        }
+      ],
+      "name": "adventure",
+      "pid": "3",
+      "position": {
+        "x": "435",
+        "y": "522"
+      }
+    },
+    {
+      "text": "You are standing in the blacksmith's shop. You are overwhelmed by glints of light and reflections off the many polished surfaces in this dim, overly crowded room.\n\nThe shop owner is ancient and his face is craggy. He motions you over to the display where he is selling a few items:\n\n[[Buy the sword (20 gold)->Buy Sword]]\n[[Buy the key (100 gold)->Buy Key]]\n\n[[Go back to the inn->main]]",
+      "links": [
+        {
+          "name": "Buy the sword (20 gold)",
+          "link": "Buy Sword",
+          "pid": "7"
+        },
+        {
+          "name": "Buy the key (100 gold)",
+          "link": "Buy Key",
+          "pid": "8"
+        },
+        {
+          "name": "Go back to the inn",
+          "link": "main",
+          "pid": "1"
+        }
+      ],
+      "name": "shop",
+      "pid": "4",
+      "position": {
+        "x": "728",
+        "y": "241"
+      }
+    },
+    {
+      "text": "(set: $hp to 10) \n(set: $coins to 10) \n(set: $days to 0)\n(set: $inv to (a:))",
+      "name": "Startup",
+      "pid": "5",
+      "position": {
+        "x": "100",
+        "y": "98"
+      },
+      "tags": [
+        "startup"
+      ]
+    },
+    {
+      "text": "\n\n\n---\n(if: $hp < 0)[ (set: $hp = 0) ]\nYou have $hp health. Your purse contains $coins coins. You have been adventuring for $days days.\n\n(if: $inv's length > 0)[Your inventory contains a (print: $inv.join(\", \")).]\n(else:)[Your inventory is empty.]",
+      "name": "Footer",
+      "pid": "6",
+      "position": {
+        "x": "100",
+        "y": "224"
+      },
+      "tags": [
+        "footer"
+      ]
+    },
+    {
+      "text": "(if: $coins >= 20)[ \n\nYou buy the sword and place it in your inventory. \n(set: $coins to $coins - 20)\n(set: $inv to $inv + (a: \"sword\"))\n(display: \"shop\")\n]\n(else:)[\nYou can't afford the sword.\n(display: \"shop\")\n]",
+      "name": "Buy Sword",
+      "pid": "7",
+      "position": {
+        "x": "651",
+        "y": "431"
+      }
+    },
+    {
+      "text": "(if: $coins >= 100)[ \n\nYou buy the key and place it in your inventory. \n---\n(set: $coins to $coins - 100)\n(set: $inv to $inv + (a: \"key\"))\n(display: \"shop\")\n]\n(else:)[\nYou can't afford the key.\n---\n(display: \"shop\")\n]",
+      "name": "Buy Key",
+      "pid": "8",
+      "position": {
+        "x": "843",
+        "y": "430"
+      }
+    },
+    {
+      "text": "(if: (either: 0, 1) is 0)[  \n  The monster bites you! \n  (set: $hp to $hp - (random: 1,4))  \n  (if: $hp < 1)[ You are [[dead]]! ]  \n  (else:)[ \n    [[Continue to fight->fight]] \n    [[Flee->main]] ]  \n]\n(else:)[ You hit the monster!  \n  (set: $monster_hp = $monster_hp - 1)  \n  (if: $monster_hp < 1)[ The [[monster is dead]]! ]  \n  (else:)[    \n    Its health is $monster_hp.\n    [[Continue to fight->fight]] \n    [[Flee->main]] ]  \n]\n",
+      "links": [
+        {
+          "name": "dead",
+          "link": "dead",
+          "pid": "10"
+        },
+        {
+          "name": "Continue to fight",
+          "link": "fight",
+          "pid": "9"
+        },
+        {
+          "name": "Flee",
+          "link": "main",
+          "pid": "1"
+        },
+        {
+          "name": "monster is dead",
+          "link": "monster is dead",
+          "pid": "11"
+        },
+        {
+          "name": "Continue to fight",
+          "link": "fight",
+          "pid": "9"
+        },
+        {
+          "name": "Flee",
+          "link": "main",
+          "pid": "1"
+        }
+      ],
+      "name": "fight",
+      "pid": "9",
+      "position": {
+        "x": "298",
+        "y": "698"
+      }
+    },
+    {
+      "text": "You are dead!\n\n[[Restart?->init]]",
+      "links": [
+        {
+          "name": "Restart?",
+          "link": "init",
+          "pid": "12"
+        }
+      ],
+      "name": "dead",
+      "pid": "10",
+      "position": {
+        "x": "352",
+        "y": "867"
+      }
+    },
+    {
+      "text": "(set: $drop to (random: 3,20)) \n(set: $coins to $coins + $drop) \n\nYou collect $drop coins from the monster carcass! \n\n[[Go on another adventure?->adventure]] \n[[Go home->main]]",
+      "links": [
+        {
+          "name": "Go on another adventure?",
+          "link": "adventure",
+          "pid": "3"
+        },
+        {
+          "name": "Go home",
+          "link": "main",
+          "pid": "1"
+        }
+      ],
+      "name": "monster is dead",
+      "pid": "11",
+      "position": {
+        "x": "647",
+        "y": "834"
+      }
+    },
+    {
+      "text": "(set: $hp to 10) \n(set: $coins to 10) \n(set: $days to 0)\n(set: $inv to (a:))\n(display: \"main\")",
+      "name": "init",
+      "pid": "12",
+      "position": {
+        "x": "100",
+        "y": "849"
+      }
+    }
+  ],
+  "name": "RPG",
+  "startnode": "1",
+  "creator": "Twine",
+  "creator-version": "2.3.7",
+  "ifid": "5D575C06-2354-4839-8001-8292EE5DE68C"
+}
