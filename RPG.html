@@ -1,0 +1,118 @@
+<html>
+  <head>
+    <title>RPG</title>
+    <script type="text/javascript">
+      /**
+       * Twison - Twine 2 JSON Export Story Format
+       *
+       * Copyright (c) 2015 Em Walker
+       * https://lazerwalker.com
+       *
+       * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+       * associated documentation files (the "Software"), to deal in the Software without restriction,
+       * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+       * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+       * subject to the following conditions:
+       *
+       * The above copyright notice and this permission notice shall be included in all copies or substantial
+       * portions of the Software.
+       *
+       * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+       * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+       * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+       * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+       * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+       */
+      var Twison={extractLinksFromText:function(t){var n=t.match(/\[\[.+?\]\]/g);return n?n.map(function(t){var n=t.match(/\[\[(.*?)\-\&gt;(.*?)\]\]/);return n?{name:n[1],link:n[2]}:(t=t.substring(2,t.length-2),{name:t,link:t})}):null},extractPropsFromText:function(t){var n,r={},e=!1;const a=/\{\{((\s|\S)+?)\}\}((\s|\S)+?)\{\{\/\1\}\}/gm;for(;null!==(n=a.exec(t));){const o=n[1],s=n[3].replace(/(\r\n|\n|\r)/gm,""),i=this.extractPropsFromText(s);r[o]=null!==i?i:s,e=!0}return e?r:null},convertPassage:function(t){var n={text:t.innerHTML},r=Twison.extractLinksFromText(n.text);r&&(n.links=r);const e=Twison.extractPropsFromText(n.text);if(e&&(n.props=e),["name","pid","position","tags"].forEach(function(r){var e=t.attributes[r].value;e&&(n[r]=e)}),n.position){var a=n.position.split(",");n.position={x:a[0],y:a[1]}}return n.tags&&(n.tags=n.tags.split(" ")),n},convertStory:function(t){var n=t.getElementsByTagName("tw-passagedata"),r=Array.prototype.slice.call(n).map(Twison.convertPassage),e={passages:r};["name","startnode","creator","creator-version","ifid"].forEach(function(n){var r=t.attributes[n].value;r&&(e[n]=r)});var a={};return e.passages.forEach(function(t){a[t.name]=t.pid}),e.passages.forEach(function(t){t.links&&t.links.forEach(function(t){t.pid=a[t.link],t.pid||(t.broken=!0)})}),e},convert:function(){var t=document.getElementsByTagName("tw-storydata")[0],n=JSON.stringify(Twison.convertStory(t),null,2);document.getElementById("output").innerHTML=n}};window.Twison=Twison;
+    </script>
+  </head>
+  <body>
+    <pre id="output"></pre>
+    <div id="storyData" style="display: none;">
+      <tw-storydata name="RPG" startnode="1" creator="Twine" creator-version="2.3.9" ifid="5D575C06-2354-4839-8001-8292EE5DE68C" zoom="1" format="Twison" format-version="0.0.1" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="main" tags="" position="412,189" size="100,100">You are in a crowded inn. The bard in the corner is raucously singing the exploits of a brave adventurer.
+
+[[Do you rest for the night?-&gt;rest]] 
+[[Do you go on an adventure?-&gt;adventure]] 
+[[Do you go shopping?-&gt;shop]]</tw-passagedata><tw-passagedata pid="2" name="rest" tags="" position="262,339" size="100,100">You spend the night in the inn. You feel rested and refreshed.
+---
+(set: $days to $days + 1)
+(set: $hp to 10)
+(display: &quot;main&quot;)</tw-passagedata><tw-passagedata pid="3" name="adventure" tags="" position="435,522" size="100,100">A monster appears!
+(set: $monster_hp to (random: 1,6))
+
+[[Fight him-&gt;fight]]
+[[Flee-&gt;main]]</tw-passagedata><tw-passagedata pid="4" name="shop" tags="" position="728,241" size="100,100">You are standing in the blacksmith&#39;s shop. You are overwhelmed by glints of light and reflections off the many polished surfaces in this dim, overly crowded room.
+
+The shop owner is ancient and his face is craggy. He motions you over to the display where he is selling a few items:
+
+[[Buy the sword (20 gold)-&gt;Buy Sword]]
+[[Buy the key (100 gold)-&gt;Buy Key]]
+
+[[Go back to the inn-&gt;main]]</tw-passagedata><tw-passagedata pid="5" name="Startup" tags="startup" position="100,98" size="100,100">(set: $hp to 10) 
+(set: $coins to 10) 
+(set: $days to 0)
+(set: $inv to (a:))</tw-passagedata><tw-passagedata pid="6" name="Footer" tags="footer" position="100,224" size="100,100">
+
+
+---
+(if: $hp &lt; 0)[ (set: $hp = 0) ]
+You have $hp health. Your purse contains $coins coins. You have been adventuring for $days days.
+
+(if: $inv&#39;s length &gt; 0)[Your inventory contains a (print: $inv.join(&quot;, &quot;)).]
+(else:)[Your inventory is empty.]</tw-passagedata><tw-passagedata pid="7" name="Buy Sword" tags="" position="651,431" size="100,100">(if: $coins &gt;= 20)[ 
+
+You buy the sword and place it in your inventory. 
+(set: $coins to $coins - 20)
+(set: $inv to $inv + (a: &quot;sword&quot;))
+(display: &quot;shop&quot;)
+]
+(else:)[
+You can&#39;t afford the sword.
+(display: &quot;shop&quot;)
+]</tw-passagedata><tw-passagedata pid="8" name="Buy Key" tags="" position="843,430" size="100,100">(if: $coins &gt;= 100)[ 
+
+You buy the key and place it in your inventory. 
+---
+(set: $coins to $coins - 100)
+(set: $inv to $inv + (a: &quot;key&quot;))
+(display: &quot;shop&quot;)
+]
+(else:)[
+You can&#39;t afford the key.
+---
+(display: &quot;shop&quot;)
+]</tw-passagedata><tw-passagedata pid="9" name="fight" tags="" position="298,698" size="100,100">(if: (either: 0, 1) is 0)[  
+  The monster bites you! 
+  (set: $hp to $hp - (random: 1,4))  
+  (if: $hp &lt; 1)[ You are [[dead]]! ]  
+  (else:)[ 
+    [[Continue to fight-&gt;fight]] 
+    [[Flee-&gt;main]] ]  
+]
+(else:)[ You hit the monster!  
+  (set: $monster_hp = $monster_hp - 1)  
+  (if: $monster_hp &lt; 1)[ The [[monster is dead]]! ]  
+  (else:)[    
+    Its health is $monster_hp.
+    [[Continue to fight-&gt;fight]] 
+    [[Flee-&gt;main]] ]  
+]
+</tw-passagedata><tw-passagedata pid="10" name="dead" tags="" position="352,867" size="100,100">You are dead!
+
+[[Restart?-&gt;init]]</tw-passagedata><tw-passagedata pid="11" name="monster is dead" tags="" position="647,834" size="100,100">(set: $drop to (random: 3,20)) 
+(set: $coins to $coins + $drop) 
+
+You collect $drop coins from the monster carcass! 
+
+[[Go on another adventure?-&gt;adventure]] 
+[[Go home-&gt;main]]</tw-passagedata><tw-passagedata pid="12" name="init" tags="" position="100,849" size="100,100">(set: $hp to 10) 
+(set: $coins to 10) 
+(set: $days to 0)
+(set: $inv to (a:))
+(display: &quot;main&quot;)</tw-passagedata></tw-storydata>
+    </div>
+    <script>
+      Twison.convert();
+    </script>
+  </body>
+</html>
